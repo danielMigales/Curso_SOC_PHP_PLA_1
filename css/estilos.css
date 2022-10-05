@@ -11,4 +11,9 @@ aside {width: 15px; height: 15px; display: inline-block; margin-right: 2px;}
 .amarillo {background-color: yellow;}
 .verde {background-color: green;}
 .azul {background-color: blue;}
-.errors {color:red; font-size: 20px;}
+
+/*las lletres dels errors don de color vermell i mes grans*/
+.errors {
+    color: red;
+    font-size: 20px;
+}

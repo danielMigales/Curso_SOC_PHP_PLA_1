@@ -1,30 +1,65 @@
 <?php
 
-//array de errors
+//array que recull els errors
 $errors = [];
 
 //obtencio del camp nif
-if (!$nif = filter_input(INPUT_POST, 'nif')) {
-	$errors[] = 'Nif obligatori';
+try {
+	if (!$nif = filter_input(INPUT_POST, 'nif')) {
+		throw new Exception('Nif obligatori');
+	}
+} catch (Exception $e) {
+	$errors[] = $e->getMessage();
 }
 
 //obtencio del camp nom
-if (!$nom = filter_input(INPUT_POST, 'nom')) {
-	$errors[] = 'Nom obligatori';
+try {
+	if (!$nom = filter_input(INPUT_POST, 'nom')) {
+		throw new Exception('Nom obligatori');
+	}
+} catch (Exception $e) {
+	$errors[] = $e->getMessage();
 }
 
 //obtencio del camp cognoms
-if (!$cognoms = filter_input(INPUT_POST, 'cognoms')) {
-	$errors[] = 'Cognom obligatori';
+try {
+	if (!$cognoms = filter_input(INPUT_POST, 'cognoms')) {
+		throw new Exception('Cognom obligatori');
+	}
+} catch (Exception $e) {
+	$errors[] = $e->getMessage();
 }
 
 //obtencio del camp nota
-if (($nota = filter_input(INPUT_POST, 'nota', FILTER_VALIDATE_INT)) === false) {
-	$errors[] = 'Nota obligatoria o no numerica';
+try {
+	if (($nota = filter_input(INPUT_POST, 'nota', FILTER_VALIDATE_INT)) === false) {
+		throw new Exception('Nota obligatoria o no numerica');
+	}
+} catch (Exception $e) {
+	$errors[] = $e->getMessage();
 }
 
-//FALTA VALIDAR QUE CUANDO NO HAYA NADA NO SEA 0
+//obtencio del camp email VALIDAR QUE SEA FORMATO CORRECTO
+try {
+	if (!$email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL)) {
+		throw new Exception('Email obligatori');
+	}
+} catch (Exception $e) {
+	$errors[] = $e->getMessage();
+}
+
+//obtencio del camp missatge
+try {
+	if (!$missatge = filter_input(INPUT_POST, 'missatge')) {
+		throw new Exception('Missatge obligatori');
+	}
+} catch (Exception $e) {
+	$errors[] = $e->getMessage();
+}
+
+
 //valoracio de la nota
+//primer he fet servir un if else if i despres he probat amb un switch. Els dos funcionen igual.
 
 /*
 if ($nota < 5) {
@@ -40,7 +75,7 @@ if ($nota < 5) {
 
 switch ($nota) {
 	case 0:
-		$nota;//quan no es posa res deixa el input amb el placeholder
+		$nota; //quan no es posa res deixa el input amb el placeholder
 		break;
 	case ($nota < 5):
 		$nota = 'Suspens';
@@ -58,18 +93,7 @@ switch ($nota) {
 		$nota = 'No definida';
 }
 
-//obtencio del camp email
-if (!$email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL)) {
-	$errors[] = 'Email obligatori';
-}
-
-//obtencio del camp missatge
-if (!$missatge = filter_input(INPUT_POST, 'missatge')) {
-	$errors[] = 'Missatge obligatori';
-}
-
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -77,7 +101,7 @@ if (!$missatge = filter_input(INPUT_POST, 'missatge')) {
 <head>
 	<meta charset="utf-8">
 	<title>PLA01</title>
-	<link rel="stylesheet" type="text/css" href="css/estils.css?v=1.0">
+	<link rel="stylesheet" type="text/css" href="css/estilos.css?v=1.0">
 </head>
 
 <body>
@@ -88,13 +112,24 @@ if (!$missatge = filter_input(INPUT_POST, 'missatge')) {
 			<input type="text" placeholder="nom" disabled value='<?php echo $nom ?>'>
 			<input type="text" placeholder="cognoms" disabled value='<?php echo $cognoms ?>'><br><br>
 			<input type="text" placeholder="qualificació" disabled value='<?php echo $nota ?>'>
-			<aside class='rojo'></aside>
-			<aside class='amarillo'></aside>
-			<aside class='verde'></aside>
-			<aside class='azul'></aside>
+
+			<!--inclusio del aside-->
+			
+			<?php
+
+			$nota = $_POST['nota']; //aqui torno a agafar el valor del POST perque la variable ara es un text
+			for ($i = 0; $i <  $nota; $i++) {
+				echo "<aside class='rojo'></aside>";
+				if ($nota > 10) {
+					break;
+				}
+			}
+
+			?>
+
 			<br><br>
 			<input type="text" placeholder="email" disabled value='<?php echo $email ?>'><br><br>
-			<textarea cols='22' rows='5' disabled><?php echo $missatge ?></textarea>
+			<textarea cols='22' rows='5' placeholder= "comentari" disabled><?php echo $missatge ?></textarea>
 			<p class='errors'><?php foreach ($errors as $valor) {
 									echo $valor . '<br/>';
 								}  ?></p>
