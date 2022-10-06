@@ -3,7 +3,7 @@
 //array que recull els errors
 $errors = [];
 
-//obtencio del camp nif
+//obtencio del camp nif amb excepcions que s'afegeixen al array de errors
 try {
 	if (!$nif = filter_input(INPUT_POST, 'nif')) {
 		throw new Exception('Nif obligatori');
@@ -39,7 +39,7 @@ try {
 	$errors[] = $e->getMessage();
 }
 
-//obtencio del camp email VALIDAR QUE SEA FORMATO CORRECTO
+//obtencio del camp email
 try {
 	if (!$email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL)) {
 		throw new Exception('Email obligatori');
@@ -57,40 +57,24 @@ try {
 	$errors[] = $e->getMessage();
 }
 
-
-//valoracio de la nota
-//primer he fet servir un if else if i despres he probat amb un switch. Els dos funcionen igual.
-
-/*
-if ($nota < 5) {
-	$nota = 'Suspens';
-} else if ($nota >= 5 && $nota < 7) {
-	$nota = 'Aprovat';
-} else if ($nota >= 7 && $nota <= 9) {
-	$nota = 'Notable';
-} else if ($nota > 9) {
-	$nota = 'Excelent';
-}
-*/
+//valoracio de la nota amb un switch. Tambe he probat amb un if else if. El resultat es igual.
 
 switch ($nota) {
-	case 0:
-		$nota; //quan no es posa res deixa el input amb el placeholder
+	case ($nota == 0):
+		$qualificacio = 'Suspens';
 		break;
-	case ($nota < 5):
-		$nota = 'Suspens';
+	case ($nota > 0 && $nota < 5):
+		$qualificacio = 'Suspens';
 		break;
-	case ($nota >= 5 && $nota < 7):
-		$nota = 'Aprovat';
+	case ($nota >= 5 && $nota <= 7):
+		$qualificacio = 'Aprovat';
 		break;
-	case ($nota >= 7 && $nota <= 9):
-		$nota = 'Notable';
+	case ($nota > 7 && $nota < 9):
+		$qualificacio = 'Notable';
 		break;
-	case ($nota > 9):
-		$nota = 'Excelent';
+	case ($nota >= 9):
+		$qualificacio = 'Excelent';
 		break;
-	default:
-		$nota = 'No definida';
 }
 
 ?>
@@ -107,29 +91,42 @@ switch ($nota) {
 <body>
 	<div class='container'>
 		<h1 class='centrar'>PLA01: MOSTRAR DADES</h1>
+		
+		<!--a cada input es coloca la informacio obtenida i validada-->
 		<div class='card'>
 			<input type="text" placeholder="nif" disabled value='<?php echo $nif ?>'><br><br>
 			<input type="text" placeholder="nom" disabled value='<?php echo $nom ?>'>
 			<input type="text" placeholder="cognoms" disabled value='<?php echo $cognoms ?>'><br><br>
-			<input type="text" placeholder="qualificació" disabled value='<?php echo $nota ?>'>
+			<input type="text" placeholder="qualificació" disabled value='<?php echo $qualificacio ?>'>
 
-			<!--inclusio del aside-->
-			
+			<!--inclusio del aside amb php-->
+
 			<?php
 
-			$nota = $_POST['nota']; //aqui torno a agafar el valor del POST perque la variable ara es un text
-			for ($i = 0; $i <  $nota; $i++) {
-				echo "<aside class='rojo'></aside>";
-				if ($nota > 10) {
-					break;
-				}
+			//he creat un array amb tots els valors del aside. Despres amb un bucle depenent de la nota mostra les capsetes.
+			$capsesAside = array(
+				"<aside class='rojo'></aside>",
+				"<aside class='rojo'></aside>",
+				"<aside class='rojo'></aside>",
+				"<aside class='rojo'></aside>",
+				"<aside class='rojo'></aside>",
+				"<aside class='amarillo'></aside>",
+				"<aside class='amarillo'></aside>",
+				"<aside class='verde'></aside>",
+				"<aside class='verde'></aside>",
+				"<aside class='azul'></aside>",
+				"<aside class='azul'></aside>"
+			);
+
+			for ($i = 1; $i <= $nota; $i++) {
+				echo $capsesAside[$i];
 			}
 
 			?>
 
 			<br><br>
 			<input type="text" placeholder="email" disabled value='<?php echo $email ?>'><br><br>
-			<textarea cols='22' rows='5' placeholder= "comentari" disabled><?php echo $missatge ?></textarea>
+			<textarea cols='22' rows='5' placeholder="comentari" disabled><?php echo $missatge ?></textarea>
 			<p class='errors'><?php foreach ($errors as $valor) {
 									echo $valor . '<br/>';
 								}  ?></p>
